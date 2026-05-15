@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex: 1;
+  background-color: #ffffff;
+}
+
+button {
+  text-transform: uppercase;
+}
+h2,
+h3 {
+  font-weight: 400;
+}
+.grid-3fr-1fr .paragraph-flex {
+  align-self: center;
+}

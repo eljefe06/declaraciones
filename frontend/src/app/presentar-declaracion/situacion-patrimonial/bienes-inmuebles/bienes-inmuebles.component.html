@@ -1,0 +1,776 @@
+<div class="section-main-container">
+  <mat-card class="form-card">
+    <section-header section="I. Declaración de situación patrimonial" progress="45" type="{{ tipoDeclaracion }}">
+    </section-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-toolbar class="background-white">
+      <label class="step-title">
+        10. Bienes inmuebles
+        <span *ngIf="tipoDeclaracion === 'inicial'">(situación actual)</span>
+        <span *ngIf="tipoDeclaracion === 'modificacion'"
+          >(entre el 1 de enero y 31 de diciembre del año inmediato anterior)</span
+        >
+        <span *ngIf="tipoDeclaracion === 'conclusion'">(del año en curso a la fecha de conclusión del empleo)</span>
+      </label>
+    </mat-toolbar>
+
+    <mat-divider></mat-divider>
+
+    <p class="vertical-margin-25">
+      Todos los campos * son obligatorios. Todos los datos de bienes declarados a nombre de la
+      <span class="negritas">pareja, dependientes económicos y/o terceros</span> o que sean en copropiedad con el
+      declarante no seran públicos y los campos resaltados <span class="no-public-inline"></span> no serán públicos.
+
+      <br />Reportar aquellos bienes que conforme a la normatividad aplicable se consideran inmuebles.
+      <span *ngIf="tipoDeclaracion === 'inicial'">
+        Para la declaración de inicio reportar la situación de los bienes inmuebles a la fecha de ingreso al empleo,
+        cargo o comisión.
+      </span>
+      <span *ngIf="tipoDeclaracion === 'modificacion'">
+        Para la declaración de modificación reportar la situación de los bienes inmuebles del año inmediato anterior.
+      </span>
+      <span *ngIf="tipoDeclaracion === 'conclusion'">
+        Para la declaración de conclusión reportar la situación de los bienes inmuebles a la fecha de conclusión del
+        empleo, cargo o comisión.
+      </span>
+    </p>
+
+    <!-- Botones iniciales -->
+    <div class="" *ngIf="!bienInmueble?.length && !editMode && !bienesInmueblesForm.value.ninguno">
+      <mat-grid-list cols="2" rowHeight="150px">
+        <mat-grid-tile colspan="1">
+          <div class="boton-agregar">
+            <button mat-raised-button color="primary" (click)="noProperty()">Ninguno</button>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile colspan="1">
+          <div class="boton-agregar">
+            <button mat-raised-button color="primary" (click)="addItem()">Agregar Bien Inmueble</button>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+
+    <!-- card de información -->
+    <div class="">
+      <mat-card class="info" *ngIf="bienesInmueblesForm.value.ninguno">
+        <p>Ningún bien inmueble</p>
+      </mat-card>
+
+      <mat-card class="info" *ngFor="let inmueble of bienInmueble; let i = index">
+        <mat-card-content class="">
+          <div class="grid-3fr-1fr">
+            <div class="paragraph-flex size-20">
+              <mat-icon matPrefix class="icon">wb_iridescent</mat-icon>
+              <p>
+                <span class="negritas">{{ inmueble.tipoInmueble.valor }}</span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">home</mat-icon>
+              <p>Terreno: {{ inmueble.superficieTerreno.valor }}</p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">group</mat-icon>
+              <p>
+                Titular: <span class="resaltar" *ngFor="let dato of inmueble.titular"> {{ dato.valor }}</span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">home</mat-icon>
+              <p>Construcción: {{ inmueble.superficieConstruccion.valor }}</p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">donut_large</mat-icon>
+              <p>
+                Porcentaje de propiedad: <span class="resaltar">{{ inmueble.porcentajePropiedad }}%</span>
+              </p>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <p>Nombre o razón social del Transmisor de la propiedad</p>
+          <div class="card-grid-3-col" *ngFor="let dato of inmueble.transmisor">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">person</mat-icon>
+              <p>
+                {{ dato.nombreRazonSocial }}
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">fingerprint</mat-icon>
+              <p>
+                {{ dato.rfc }}
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">person</mat-icon>
+              <p>
+                {{ dato.tipoPersona }}
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">person</mat-icon>
+              <p>Relación con el titular: {{ dato.relacion.valor }}</p>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <p>Nombre del Tercero o Terceros</p>
+          <div class="card-grid-3-col" *ngFor="let dato of inmueble.tercero">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">person</mat-icon>
+              <p>
+                {{ dato.nombreRazonSocial }}
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">fingerprint</mat-icon>
+              <p>
+                {{ dato.rfc }}
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">person</mat-icon>
+              <p>
+                {{ dato.tipoPersona }}
+              </p>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="grid-3fr-1fr">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">credit_card</mat-icon>
+              <p>
+                Forma de adquisición: <span class="resaltar">{{ inmueble.formaAdquisicion.valor }}</span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">feedback</mat-icon>
+              <p>{{ inmueble.valorConformeA | replace: '_':' ' }}</p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">credit_card</mat-icon>
+              <p>
+                Forma de pago: <span class="resaltar">{{ inmueble.formaPago | replace: '_':' ' }}</span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">feedback</mat-icon>
+              <p>Folio: {{ inmueble.datoIdentificacion }}</p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">date_range</mat-icon>
+              <p>
+                Fecha de adquisición del inmueble:
+                <span class="resaltar">{{ inmueble.fechaAdquisicion | date: 'dd/MM/yyyy' }}</span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">account_balance_wallet</mat-icon>
+              <p>
+                Valor de adquisición:
+                <span class="resaltar"
+                  >{{ inmueble.valorAdquisicion.valor | currency }} {{ inmueble.valorAdquisicion?.moneda }}</span
+                >
+              </p>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="card-grid-3-col">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">public</mat-icon>
+              <p>Lugar donde reside</p>
+            </div>
+            <div class=""></div>
+
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon card-no-public">location_city</mat-icon>
+              <p>Domicilio del Inmueble</p>
+            </div>
+            <div class="">
+              <p *ngIf="inmueble.domicilioExtranjero">En el extranjero</p>
+              <p *ngIf="inmueble.domicilioMexico">En México</p>
+            </div>
+            <div class=""></div>
+            <div class="paragraph-flex">
+              <p *ngIf="inmueble.domicilioMexico">
+                {{ inmueble.domicilioMexico.calle }}
+                {{ inmueble.domicilioMexico.numeroExterior }}
+                <span *ngIf="inmueble.domicilioMexico.numeroInterior"
+                  >int. {{ inmueble.domicilioMexico.numeroInterior }}</span
+                >
+                {{ inmueble.domicilioMexico.coloniaLocalidad }}, {{ inmueble.domicilioMexico.municipioAlcaldia.valor }},
+                {{ inmueble.domicilioMexico.entidadFederativa.valor }}, C.P.
+                {{ inmueble.domicilioMexico.codigoPostal }}.
+              </p>
+              <p *ngIf="inmueble.domicilioExtranjero">
+                {{ inmueble.domicilioExtranjero.calle }}
+                {{ inmueble.domicilioExtranjero.numeroExterior }}
+                <span *ngIf="inmueble.domicilioExtranjero.numeroInterior"
+                  >int. {{ inmueble.domicilioExtranjero.numeroInterior }}</span
+                >
+                {{ inmueble.domicilioExtranjero.ciudadLocalidad }}, {{ inmueble.domicilioExtranjero.estadoProvincia }},
+                {{ inmueble.domicilioExtranjero.pais }}, C.P. {{ inmueble.domicilioExtranjero.codigoPostal }}.
+              </p>
+            </div>
+          </div>
+
+          <!-- <mat-divider></mat-divider>
+          <div class="padding-card-section">
+            <div class="paragraph-flex aclaraciones">
+              <mat-icon matPrefix class="icon">speaker_notes</mat-icon>
+              <p>Aclaraciones/Observaciones</p>
+            </div>
+            <p>
+              {{ inmueble?.aclaracionesObservaciones }}
+            </p>
+          </div> -->
+
+          <mat-divider></mat-divider>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="editItem(i)">Modificar</button>
+          <button mat-button color="primary" (click)="removeItem(i)">Eliminar</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <div *ngIf="!editMode && aclaracionesText">
+        <div class="paragraph-flex aclaraciones">
+          <mat-icon matPrefix class="icon card-no-public">insert_comment</mat-icon>
+          <p>Aclaraciones / Observaciones</p>
+        </div>
+        <p class="vertical-margin-25">{{ aclaracionesText }}</p>
+      </div>
+
+      <div class="boton-agregar" *ngIf="(bienInmueble.length && !editMode) || bienesInmueblesForm.value.ninguno">
+        <button mat-raised-button color="primary" (click)="addItem()">Agregar Bien Inmueble</button>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="saveItem()" [formGroup]="bienesInmueblesForm" *ngIf="editMode">
+      <!-- Agregar -->
+      <div class="padding-agregar" formGroupName="bienInmueble">
+        <mat-divider></mat-divider>
+
+        <!-- Datos dependiente -->
+        <div class="">
+          <h2>Agregar bien inmueble</h2>
+          <div class="grid-2-col grid-margin">
+            <mat-form-field matTooltip="{{ tooltipData.tipInmueble }}" appearance="fill">
+              <mat-label>Tipo de Inmueble</mat-label>
+              <mat-icon matPrefix>wb_iridescent</mat-icon>
+              <mat-select formControlName="tipoInmueble" required>
+                <mat-option *ngFor="let tipoInmueble of tipoInmuebleCatalogo" [value]="tipoInmueble">
+                  {{ tipoInmueble.valor }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              appearance="fill"
+              *ngIf="bienesInmueblesForm.value.bienInmueble?.tipoInmueble?.clave === 'OTRO'"
+            >
+              <mat-label>Especifique</mat-label>
+              <mat-icon matPrefix class="no-public">wb_iridescent</mat-icon>
+              <input [errorStateMatcher]="errorMatcher" matInput type="text" required />
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.titular }}" appearance="fill">
+              <mat-label>Titular del Inmueble</mat-label>
+              <mat-icon matPrefix class="no-public">person</mat-icon>
+              <mat-select formControlName="titular" required>
+                <mat-option *ngFor="let titularBien of titularBienCatalogo" [value]="titularBien">
+                  {{ titularBien.valor }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- Tercero -->
+          <div class="grid-3-col grid-margin" formGroupName="tercero">
+            <mat-radio-group matTooltip="{{ tooltipData.tercero }}" class="checkbox" formControlName="tipoPersona">
+              <p class="question double-col">Tercero</p>
+              <mat-radio-button value="FISICA"><span class="no-public-inline"></span>Persona Física</mat-radio-button>
+              <mat-radio-button value="MORAL">Persona Moral</mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field matTooltip="{{ tooltipData.nombreTercero }}" appearance="fill">
+              <mat-label>Nombre del Tercero o Terceros</mat-label>
+              <mat-icon matPrefix>group</mat-icon>
+              <input [errorStateMatcher]="errorMatcher" matInput type="text" formControlName="nombreRazonSocial" />
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.rfc }}" appearance="fill">
+              <mat-label>RFC</mat-label>
+              <mat-icon matPrefix>fingerprint</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                #input_rfc_tercero
+                formControlName="rfc"
+                type="text"
+                maxlength="13"
+              />
+              <mat-hint align="end">{{ input_rfc_tercero.value?.length || 0 }}/13</mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="grid-3-col grid-margin">
+            <mat-form-field matTooltip="{{ tooltipData.porcentajePropiedad }}" appearance="fill">
+              <mat-label>Porcentaje de propiedad del declarante conforme a escrituración o contrato </mat-label>
+              <mat-icon matPrefix>donut_large</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="number"
+                formControlName="porcentajePropiedad"
+                min="0"
+                max="100"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field
+              matTooltip="{{ tooltipData.superficieTerreno }}"
+              appearance="fill"
+              formGroupName="superficieTerreno"
+            >
+              <mat-label>Superficie del terreno</mat-label>
+              <mat-icon matPrefix>home</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="number"
+                formControlName="valor"
+                min="0"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field
+              matTooltip="{{ tooltipData.superficieConstruccion }}"
+              appearance="fill"
+              formGroupName="superficieConstruccion"
+            >
+              <mat-label>Superficie de construcción</mat-label>
+              <mat-icon matPrefix>home</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="number"
+                formControlName="valor"
+                min="0"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.formaAdquisicion }}" appearance="fill">
+              <mat-label>Forma de Adquisición</mat-label>
+              <mat-icon matPrefix>credit_card</mat-icon>
+              <mat-select formControlName="formaAdquisicion" required>
+                <mat-option *ngFor="let formaAdquisicion of formaAdquisicionCatalogo" [value]="formaAdquisicion">
+                  {{ formaAdquisicion.valor }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.formaPago }}" appearance="fill">
+              <mat-label>Forma de Pago</mat-label>
+              <mat-icon matPrefix>credit_card</mat-icon>
+              <mat-select formControlName="formaPago" required>
+                <mat-option *ngFor="let formaPago of formaPagoCatalogo" value="{{ formaPago }}">
+                  {{ formaPago | replace: '_':' ' }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div formGroupName="transmisor">
+              <mat-radio-group
+                matTooltip="{{ tooltipData.transmisorPropiedad }}"
+                class="checkbox"
+                formControlName="tipoPersona"
+              >
+                <p class="question double-col">Transmisor de la propiedad</p>
+                <mat-radio-button value="FISICA"><span class="no-public-inline"></span>Persona Física</mat-radio-button>
+                <mat-radio-button value="MORAL">Persona Moral</mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <mat-form-field
+              matTooltip="{{ tooltipData.nombreRazonSocialTransmisor }}"
+              appearance="fill"
+              formGroupName="transmisor"
+            >
+              <mat-label>Nombre o razón social del transmisor de la propiedad</mat-label>
+              <mat-icon matPrefix class="no-public">dns</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="text"
+                formControlName="nombreRazonSocial"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.rfcTransmisor }}" appearance="fill" formGroupName="transmisor">
+              <mat-label>RFC</mat-label>
+              <mat-icon matPrefix class="no-public">fingerprint</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                class="no-public"
+                formControlName="rfc"
+                #input_rfc
+                type="text"
+                maxlength="13"
+                required
+              />
+              <mat-hint align="end">{{ input_rfc.value?.length || 0 }}/13</mat-hint>
+            </mat-form-field>
+            <mat-form-field
+              matTooltip="{{ tooltipData.relacionTransmisorTitular }}"
+              appearance="fill"
+              formGroupName="transmisor"
+            >
+              <mat-label>Relación del transmisor de la propiedad con el titular</mat-label>
+              <mat-icon matPrefix class="no-public">group</mat-icon>
+              <mat-select formControlName="relacion" required>
+                <mat-option *ngFor="let parentescoRelacion of parentescoRelacionCatalogo" [value]="parentescoRelacion">
+                  {{ parentescoRelacion.valor }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              appearance="fill"
+              class="double-col"
+              *ngIf="bienesInmueblesForm.value.bienInmueble.transmisor?.relacion?.clave === 'OTRO'"
+            >
+              <mat-label>Especifique</mat-label>
+              <mat-icon matPrefix class="no-public">group</mat-icon>
+              <input [errorStateMatcher]="errorMatcher" matInput type="text" required />
+            </mat-form-field>
+            <mat-form-field
+              matTooltip="{{ tooltipData.valorAdquisicion }}"
+              appearance="fill"
+              formGroupName="valorAdquisicion"
+            >
+              <mat-label>Valor de Adquisición</mat-label>
+              <mat-icon matPrefix>account_balance_wallet</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="number"
+                formControlName="valor"
+                min="0"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field
+              matTooltip="{{ tooltipData.tipoMoneda }}"
+              appearance="fill"
+              formGroupName="valorAdquisicion"
+            >
+              <mat-label>Tipo de Moneda</mat-label>
+              <mat-icon matPrefix>wb_iridescent</mat-icon>
+              <mat-select formControlName="moneda" required>
+                <mat-option *ngFor="let m of monedasCatalogo" [value]="m.clave">
+                  {{ m.clave }} - {{ m.valor }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.fechaAdquisicionInmueble }}" appearance="fill">
+              <mat-label>Fecha de Adquisición del Inmueble</mat-label>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                formControlName="fechaAdquisicion"
+                [matDatepicker]="pickerAdquisicion"
+                required
+              />
+              <mat-hint>dd/mm/yyyy</mat-hint>
+              <mat-datepicker-toggle matPrefix [for]="pickerAdquisicion"> </mat-datepicker-toggle>
+              <mat-datepicker #pickerAdquisicion></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="grid-2-col grid-margin">
+            <mat-form-field matTooltip="{{ tooltipData.datosRegistroPublicoPropiedad }}" appearance="fill">
+              <mat-label
+                >Datos del registro público de la propiedad: folio real u otro dato que permita su
+                identificación</mat-label
+              >
+              <mat-icon matPrefix class="no-public">feedback</mat-icon>
+              <input
+                [errorStateMatcher]="errorMatcher"
+                matInput
+                type="text"
+                formControlName="datoIdentificacion"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field matTooltip="{{ tooltipData.valorAdquisicionInmueble }}" appearance="fill">
+              <mat-label>¿El valor de adquisición del inmueble es conforme a?</mat-label>
+              <mat-icon matPrefix>feedback</mat-icon>
+              <mat-select formControlName="valorConformeA" required>
+                <mat-option *ngFor="let valorConformeA of valorConformeACatalogo" value="{{ valorConformeA }}">
+                  {{ valorConformeA | replace: '_':' ' }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="bloque">
+          <div class="grid-2-col grid-margin">
+            <mat-form-field matTooltip="{{ tooltipData.ubicacionInmueble }}" appearance="fill">
+              <mat-label>Ubicación del inmueble</mat-label>
+              <mat-icon matPrefix class="no-public">public</mat-icon>
+              <mat-select
+                [value]="tipoDomicilio"
+                (selectionChange)="tipoDomicilioChanged($event.value)"
+                required
+                data-test="ubicacion"
+              >
+                <mat-option value="MEXICO"> México </mat-option>
+                <mat-option value="EXTRANJERO"> En el extranjero </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- Extranjero -->
+          <mat-grid-list
+            *ngIf="tipoDomicilio === 'EXTRANJERO'"
+            cols="15"
+            rowHeight="100px"
+            formGroupName="domicilioExtranjero"
+          >
+            <mat-grid-tile colspan="6">
+              <mat-form-field appearance="fill">
+                <mat-label>Calle</mat-label>
+                <mat-icon matPrefix class="no-public">streetview</mat-icon>
+                <input [errorStateMatcher]="errorMatcher" matInput type="text" formControlName="calle" required />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Número Exterior</mat-label>
+                <mat-icon matPrefix class="no-public">image_aspect_ratio</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  type="text"
+                  formControlName="numeroExterior"
+                  required
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Número Interior</mat-label>
+                <mat-icon matPrefix class="no-public">image_aspect_ratio</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_ni
+                  type="text"
+                  formControlName="numeroInterior"
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Código Postal</mat-label>
+                <mat-icon matPrefix class="no-public">markunread_mailbox</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_cp
+                  maxlength="5"
+                  type="text"
+                  formControlName="codigoPostal"
+                  required
+                />
+                <mat-hint align="end">{{ input_cp.value?.length || 0 }}/5</mat-hint>
+              </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>País</mat-label>
+                <mat-icon matPrefix class="no-public">location_city</mat-icon>
+                <mat-select formControlName="pais" required>
+                  <mat-option *ngFor="let opt of paisesCatalogo" [value]="opt.clave">
+                    {{ opt.valor }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>Estado/Provincia</mat-label>
+                <mat-icon matPrefix class="no-public">public</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_ep
+                  type="text"
+                  formControlName="estadoProvincia"
+                  required
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>Ciudad/Localidad</mat-label>
+                <mat-icon matPrefix class="no-public">beenhere</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_cl
+                  type="text"
+                  formControlName="ciudadLocalidad"
+                  required
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+          </mat-grid-list>
+          <!-- México -->
+          <mat-grid-list *ngIf="tipoDomicilio === 'MEXICO'" cols="15" rowHeight="100px" formGroupName="domicilioMexico">
+            <mat-grid-tile colspan="6">
+              <mat-form-field appearance="fill">
+                <mat-label>Calle</mat-label>
+                <mat-icon matPrefix class="no-public">streetview</mat-icon>
+                <input [errorStateMatcher]="errorMatcher" matInput type="text" formControlName="calle" required />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Número Exterior</mat-label>
+                <mat-icon matPrefix class="no-public">image_aspect_ratio</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  type="text"
+                  formControlName="numeroExterior"
+                  required
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Número Interior</mat-label>
+                <mat-icon matPrefix class="no-public">image_aspect_ratio</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_ni
+                  type="text"
+                  formControlName="numeroInterior"
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="3">
+              <mat-form-field appearance="fill">
+                <mat-label>Código Postal</mat-label>
+                <mat-icon matPrefix class="no-public">markunread_mailbox</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_cp
+                  maxlength="5"
+                  type="text"
+                  formControlName="codigoPostal"
+                  required
+                />
+                <mat-hint align="end">{{ input_cp.value?.length || 0 }}/5</mat-hint>
+              </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>Entidad Federativa</mat-label>
+                <mat-icon matPrefix class="no-public">public</mat-icon>
+                <mat-select formControlName="entidadFederativa" required>
+                  <mat-option *ngFor="let opt of estadosCatalogo" [value]="opt">
+                    {{ opt.valor }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>Municipio/Alcaldía</mat-label>
+                <mat-icon matPrefix class="no-public">beenhere</mat-icon>
+                <mat-select formControlName="municipioAlcaldia" required>
+                  <mat-option *ngFor="let opt of municipiosCatalogo[estado?.clave]" [value]="opt">
+                    {{ opt.valor }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5">
+              <mat-form-field appearance="fill">
+                <mat-label>Colonia</mat-label>
+                <mat-icon matPrefix class="no-public">location_city</mat-icon>
+                <input
+                  [errorStateMatcher]="errorMatcher"
+                  matInput
+                  #input_localidad
+                  type="text"
+                  formControlName="coloniaLocalidad"
+                  required
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+          </mat-grid-list>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="boton" *ngIf="!aclaraciones">
+        <button mat-raised-button class="text-primary" (click)="toggleAclaraciones(true)">
+          AGREGAR ACLARACIONES / OBSERVACIONES
+        </button>
+      </div>
+      <div *ngIf="aclaraciones">
+        <div class="flex grid-margin">
+          <p>Aclaraciones / Observaciones</p>
+          <button mat-raised-button color="primary" (click)="toggleAclaraciones(false)">CANCELAR</button>
+        </div>
+
+        <mat-form-field matTooltip="{{ tooltipData.aclaracionesObservaciones }}" appearance="fill" class="grid-margin">
+          <mat-icon matPrefix class="aclaraciones-no-public">speaker_notes</mat-icon>
+          <textarea
+            maxlength="500"
+            [errorStateMatcher]="errorMatcher"
+            matInput
+            formControlName="aclaracionesObservaciones"
+            rows="10"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="boton text-right">
+        <app-loader class="inline-loader" [isLoading]="isLoading"></app-loader>
+        <button mat-raised-button color="primary" type="button" *ngIf="editMode" (click)="cancelEditMode()">
+          CANCELAR
+        </button>
+        <button mat-raised-button color="primary" type="button" (click)="bienesInmueblesForm.reset()">
+          LIMPIAR FORMULARIO
+        </button>
+        <button mat-raised-button color="primary" [disabled]="bienesInmueblesForm.invalid || isLoading">
+          GUARDAR CAMBIOS
+        </button>
+      </div>
+    </form>
+
+    <mat-divider></mat-divider>
+
+    <div class="boton center">
+      <button mat-raised-button color="primary" (click)="formHasChanges()">
+        CONTINUAR 11 DE 15
+        <mat-icon matSofix>arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    <section-footer [declaracionId]="declaracionId"></section-footer>
+  </mat-card>
+</div>

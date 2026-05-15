@@ -1,0 +1,85 @@
+<div fxFill fxLayout="column">
+  <app-header class="mg-btm-80px"></app-header>
+  <div class="contenedor">
+    <mat-toolbar class="background-white title-toolbar mg-top-100px pd-0">
+      <label class="step-title">Detalle de perfil</label>
+    </mat-toolbar>
+
+    <div class="pd-lateral pb-100px" *ngIf="user">
+      <mat-card class="contenedor info">
+        <mat-card-content>
+          <div class="size-20">
+            <p>
+              <span class="negritas"> {{ user?.nombre }} {{ user?.primerApellido }} {{ user?.segundoApellido }} </span>
+            </p>
+          </div>
+          <div class="grid-2-col">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">fingerprint</mat-icon>
+              <p>
+                CURP:
+                <span class="resaltar">
+                  {{ user?.curp }}
+                </span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">fingerprint</mat-icon>
+              <p>
+                RFC:
+                <span class="resaltar">
+                  {{ user?.rfc }}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div class="grid-2-col">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">date_range</mat-icon>
+              <p>
+                Fecha de Registro:
+                <span class="resaltar">
+                  {{ user?.createdAt | date: 'dd/MM/yyyy' }}
+                </span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">email</mat-icon>
+              <p>
+                Correo Electrónico:
+                <span class="resaltar">
+                  {{ user?.username }}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div class="grid-2-col">
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">account_balance</mat-icon>
+              <p>
+                Institución: <br />
+                <span class="resaltar">
+                  {{ user?.institucion?.valor || 'Sin seleccionar' | uppercase }}
+                </span>
+              </p>
+            </div>
+            <div class="paragraph-flex">
+              <mat-icon matPrefix class="icon">supervisor_account</mat-icon>
+              <p>
+                Roles:
+                <span class="resaltar">
+                  {{ transformRoles(user?.roles) }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <!--<mat-card-actions class="boton-agregar">
+              <button mat-button color="primary">Editar</button>
+            </mat-card-actions>-->
+      </mat-card>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</div>

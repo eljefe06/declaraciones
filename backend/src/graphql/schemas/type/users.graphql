@@ -1,0 +1,19 @@
+type User {
+  _id: ID!
+  username: Email!
+  nombre: LimitedString!
+  primerApellido: LimitedString!
+  segundoApellido: LimitedString
+  institucion: Catalogo
+  curp: LimitedString!
+  rfc: LimitedString!
+  roles: [Role!]!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type Login {
+  user: User!
+  refreshJwtToken: String!
+  jwtToken: String!
+}
